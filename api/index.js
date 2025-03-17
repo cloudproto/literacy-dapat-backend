@@ -25,13 +25,8 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.options("*", (req, res) => {
-    res.header("Access-Control-Allow-Origin", "https://literacy-dapat.vercel.app");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.sendStatus(200);
-});
+app.options("*", cors()); 
+
 
 // Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

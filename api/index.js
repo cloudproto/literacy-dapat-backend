@@ -20,10 +20,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const cors = require('cors');
-app.use(cors());
-
-
 // Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -486,7 +482,13 @@ app.listen(5000, () => console.log("Server running on port 5000"));
 
 module.exports = app;
 
-// const app = require("./app");
-// module.exports = (req, res) => {
-//     app(req, res);
-// };
+module.exports = (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "https://literacy-dapat.vercel.app");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+};

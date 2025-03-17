@@ -17,13 +17,15 @@ const pool = new Pool({
 
 const app = express();
 app.use(cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"], 
-    allowedHeaders: ["Content-Type", "Authorization"] 
+    origin: "https://literacy-dapat-edj6tft8r-cloudprotos-projects.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.options("*", cors()); 
+
 
 // Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

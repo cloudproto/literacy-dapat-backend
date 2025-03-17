@@ -8,7 +8,7 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    connectionString: "postgres://your_user:your_password@your-cloud-host:5432/your_db",
+    connectionString: "",
     ssl: { rejectUnauthorized: false },
   });
 

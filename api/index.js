@@ -14,7 +14,7 @@ const pool = new Pool({
 
 const app = express();
 app.use(cors({
-    origin: "https://literacy-dapat.vercel.app",
+    origin: "*",
     credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -485,4 +485,4 @@ app.get("/", (
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-module.exports = { app, pool };
+module.exports = { app, pool }

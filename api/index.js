@@ -1,6 +1,4 @@
 require("dotenv").config();
-const https = require("https");
-const fs = require("fs");
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
@@ -8,12 +6,6 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
 const { Pool } = require("pg");
-
-// Load SSL Certificate and Key
-const options = {
-    key: fs.readFileSync("server.key"),
-    cert: fs.readFileSync("server.cert"),
-};
 
 const pool = new Pool({
     user: "postgres",
@@ -28,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const authenticateToken = (req, res, next) => {
@@ -40,11 +33,6 @@ const authenticateToken = (req, res, next) => {
         next();
     });
 };
-
-// Start HTTPS Server
-https.createServer(options, app).listen(443, () => {
-    console.log("Server running on https://localhost:443");
-});
 
 // Multer storage setup for avatars
 const storage = multer.diskStorage({

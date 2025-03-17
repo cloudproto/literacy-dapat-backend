@@ -273,7 +273,7 @@ app.put("/api/assessments/:id/status", authenticateToken, async (req, res) => {
         res.json(result.rows[0]);
     } catch (error) {
         console.error("Error updating assessment status:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Internal Server Error" });  
     }
 });
 

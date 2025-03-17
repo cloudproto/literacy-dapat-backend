@@ -480,7 +480,7 @@ app.get("/", (
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-module.exports = app;
+//module.exports = app;
 
 module.exports = (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "https://literacy-dapat.vercel.app");
@@ -491,4 +491,5 @@ module.exports = (req, res) => {
     if (req.method === "OPTIONS") {
         return res.status(200).end();
     }
+
 };

@@ -16,7 +16,12 @@ const pool = new Pool({
 });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "https://literacy-dapat.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -480,16 +485,5 @@ app.get("/", (
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-//module.exports = app;
+module.exports = app;
 
-module.exports = (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "https://literacy-dapat.vercel.app");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-
-    if (req.method === "OPTIONS") {
-        return res.status(200).end();
-    }
-
-};

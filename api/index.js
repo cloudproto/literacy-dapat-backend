@@ -17,7 +17,8 @@ const pool = new Pool({
 
 const app = express();
 app.use(cors({
-    origin: "*",
+    origin: "https://literacy-dapat.vercel.app",
+    credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));

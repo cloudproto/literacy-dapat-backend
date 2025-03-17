@@ -8,12 +8,9 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    user: "postgres",
-    host: "localhost",
-    database: "literacy_dapat",
-    password: "DanTDMrocks123",
-    port: 5432,
-});
+    connectionString: "postgres://your_user:your_password@your-cloud-host:5432/your_db",
+    ssl: { rejectUnauthorized: false },
+  });
 
 const app = express();
 app.use(cors({
@@ -488,4 +485,4 @@ app.get("/", (
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-module.exports = app;
+module.exports = { app, pool };

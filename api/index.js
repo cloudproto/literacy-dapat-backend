@@ -83,8 +83,8 @@ app.post("/auth/register", async (req, res) => {
         }
 
         await pool.query(
-            INSERT INTO users (email, password, role, full_name, bio, avatar_url, phone_number, skills, location) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+            `INSERT INTO users (email, password, role, full_name, bio, avatar_url, phone_number, skills, location) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
             [email, hashedPassword, role || "user", fullName, bio, avatarUrl, phoneNumber, skills, location]
         );
 
@@ -158,7 +158,7 @@ app.put("/user/profile", authenticateToken, upload.single("avatar"), async (req,
 
     // If there's an avatar file uploaded, create its URL
     if (req.file) {
-        avatarUrl = ${req.protocol}://${req.get("host")}/uploads/${req.file.filename};
+        avatarUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     } else {
         // If no new avatar is uploaded, keep the existing avatar_url
         avatarUrl = req.body.avatar_url || null;
@@ -166,9 +166,9 @@ app.put("/user/profile", authenticateToken, upload.single("avatar"), async (req,
 
     try {
         await pool.query(
-            UPDATE users 
+            `UPDATE users 
              SET full_name = $1, bio = $2, avatar_url = $3, phone_number = $4, skills = $5, location = $6 
-             WHERE id = $7,
+             WHERE id = $7`,
             [full_name, bio, avatarUrl, phone_number, skills, location, req.user.userId]
         );
 
@@ -203,9 +203,9 @@ app.get("/assessments", authenticateToken, async (req, res) => {
 app.post("/assessments", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
-            INSERT INTO assessments 
+            `INSERT INTO assessments 
              (student_age, student_gender, student_grade_level, student_city, student_school, student_barangay, student_region, volunteer_id) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *,
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [
                 req.body.student_age, req.body.student_gender, req.body.student_grade_level,
                 req.body.student_city, req.body.student_school, req.body.student_barangay,
@@ -241,10 +241,10 @@ app.post("/assessments/delete", async (req, res) => {
 app.get("/assessments/:id", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
-            SELECT a.*, u.full_name AS volunteer_name 
+            `SELECT a.*, u.full_name AS volunteer_name 
              FROM assessments a
              LEFT JOIN users u ON a.volunteer_id = u.id
-             WHERE a.id = $1,
+             WHERE a.id = $1`,
             [req.params.id]
         );
 
@@ -318,46 +318,46 @@ app.get("/statistics", authenticateToken, async (req, res) => {
         let values = [];
 
         if (region) {
-            query +=  AND student_region = $${values.length + 1};
+            query += ` AND student_region = $${values.length + 1}`;
             values.push(region);
         }
         if (city) {
-            query +=  AND student_city = $${values.length + 1};
+            query += ` AND student_city = $${values.length + 1}`;
             values.push(city);
         }
         if (barangay) {
-            query +=  AND student_barangay = $${values.length + 1};
+            query += ` AND student_barangay = $${values.length + 1}`;
             values.push(barangay);
         }
         if (school) {
-            query +=  AND student_school = $${values.length + 1};
+            query += ` AND student_school = $${values.length + 1}`;
             values.push(school);
         }
         if (age) {
             if (age.includes("-")) {
                 // Handle range: age=12-20 → WHERE student_age BETWEEN 12 AND 20
                 const [minAge, maxAge] = age.split("-").map(Number);
-                query +=  AND student_age BETWEEN $${values.length + 1} AND $${values.length + 2};
+                query += ` AND student_age BETWEEN $${values.length + 1} AND $${values.length + 2}`;
                 values.push(minAge, maxAge);
             } else if (age.includes(",")) {
                 // Handle multiple values: age=12,15,18 → WHERE student_age IN (12, 15, 18)
                 const ageValues = age.split(",").map(num => parseInt(num.trim(), 10)).filter(num => !isNaN(num));
                 if (ageValues.length > 0) {
-                    const placeholders = ageValues.map((_, i) => $${values.length + i + 1}).join(",");
-                    query +=  AND student_age IN (${placeholders});
+                    const placeholders = ageValues.map((_, i) => `$${values.length + i + 1}`).join(",");
+                    query += ` AND student_age IN (${placeholders})`;
                     values.push(...ageValues);
                 }
             } else {
                 // Handle single age: age=22 → WHERE student_age = 22
                 const singleAge = parseInt(age, 10);
                 if (!isNaN(singleAge)) {
-                    query +=  AND student_age = $${values.length + 1};
+                    query += ` AND student_age = $${values.length + 1}`;
                     values.push(singleAge);
                 }
             }
         }
         if (gender) {
-            query +=  AND student_gender = $${values.length + 1};
+            query += ` AND student_gender = $${values.length + 1}`;
             values.push(gender);
         }
 
@@ -371,9 +371,9 @@ app.get("/statistics", authenticateToken, async (req, res) => {
 
 app.get("/levels", authenticateToken, async (req, res) => {
     try {
-        let query = 
+        let query = `
             SELECT level, COUNT(*) as count FROM assessments
-        ;
+        `;
 
         const values = [];
         const conditions = [];
@@ -381,19 +381,19 @@ app.get("/levels", authenticateToken, async (req, res) => {
         if (req.query.age) {
             const ageRange = req.query.age.split(",").map(num => parseInt(num.trim(), 10));
             if (ageRange.length === 1) {
-                conditions.push(age = $${values.length + 1});
+                conditions.push(`age = $${values.length + 1}`);
                 values.push(ageRange[0]);
             } else if (ageRange.length === 2) {
-                conditions.push(age BETWEEN $${values.length + 1} AND $${values.length + 2});
+                conditions.push(`age BETWEEN $${values.length + 1} AND $${values.length + 2}`);
                 values.push(ageRange[0], ageRange[1]);
             }
         }
 
         if (conditions.length) {
-            query +=  WHERE  + conditions.join(" AND ");
+            query += ` WHERE ` + conditions.join(" AND ");
         }
 
-        query +=  GROUP BY level;
+        query += ` GROUP BY level`;
 
         const result = await pool.query(query, values);
         const levels = ["Nothing", "Letter", "Word", "Paragraph", "Comprehension"];
@@ -420,8 +420,8 @@ app.post("/auth/register", async (req, res) => {
         }
 
         await pool.query(
-            INSERT INTO users (email, password, role, full_name, bio, avatar_url, phone_number, skills, location) 
-            VALUES ($1, $2, 'user', $3, $4, $5, $6, $7, $8),
+            `INSERT INTO users (email, password, role, full_name, bio, avatar_url, phone_number, skills, location) 
+            VALUES ($1, $2, 'user', $3, $4, $5, $6, $7, $8)`,
             [email, hashedPassword, fullName, bio, avatarUrl, phoneNumber, skills, location]
         );
 
@@ -488,4 +488,4 @@ app.get("/", (
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 
-module.exports = { app, pool }
+module.exports = app;

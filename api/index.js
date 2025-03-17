@@ -8,9 +8,12 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    connectionString: "",
-    ssl: { rejectUnauthorized: false },
-  });
+    user: "postgres",
+    host: "localhost",
+    database: "literacy_dapat",
+    password: "DanTDMrocks123",
+    port: 5432,
+});
 
 const app = express();
 app.use(cors({

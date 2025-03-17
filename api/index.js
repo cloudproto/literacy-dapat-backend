@@ -54,7 +54,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Avatar Upload Route
-app.post("/api/upload-avatar", authenticateToken, upload.single("avatar"), async (req, res) => {
+app.post("/upload-avatar", authenticateToken, upload.single("avatar"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
@@ -72,7 +72,7 @@ app.post("/api/upload-avatar", authenticateToken, upload.single("avatar"), async
 });
 
 // User Registration
-app.post("/api/auth/register", async (req, res) => {
+app.post("/auth/register", async (req, res) => {
     const { email, password, role, fullName = "", bio = "", avatarUrl = "", phoneNumber = "", skills = "", location = "" } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -95,7 +95,7 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 // User Login
-app.post("/api/auth/login", async (req, res) => {
+app.post("/auth/login", async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -136,7 +136,7 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // Get User Profile
-app.get("/api/user/profile", authenticateToken, async (req, res) => {
+app.get("/user/profile", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
             "SELECT email, full_name, bio, avatar_url, phone_number, skills, location FROM users WHERE id = $1", 
@@ -152,7 +152,7 @@ app.get("/api/user/profile", authenticateToken, async (req, res) => {
 });
 
 // Update Profile
-app.put("/api/user/profile", authenticateToken, upload.single("avatar"), async (req, res) => {
+app.put("/user/profile", authenticateToken, upload.single("avatar"), async (req, res) => {
     const { full_name, bio, phone_number, skills, location } = req.body;
     let avatarUrl = null;
 
@@ -181,7 +181,7 @@ app.put("/api/user/profile", authenticateToken, upload.single("avatar"), async (
 // Assessments API Routes
 
 // Get assessments: volunteers see only their own, admins see all
-app.get("/api/assessments", authenticateToken, async (req, res) => {
+app.get("/assessments", authenticateToken, async (req, res) => {
     try {
         let query = "SELECT * FROM assessments";
         let values = [];
@@ -200,7 +200,7 @@ app.get("/api/assessments", authenticateToken, async (req, res) => {
     }
 });
 
-app.post("/api/assessments", authenticateToken, async (req, res) => {
+app.post("/assessments", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
             `INSERT INTO assessments 
@@ -221,7 +221,7 @@ app.post("/api/assessments", authenticateToken, async (req, res) => {
 
 
 // Delete an assessment by ID
-app.post("/api/assessments/delete", async (req, res) => {
+app.post("/assessments/delete", async (req, res) => {
     const { ids } = req.body;
     if (!ids || ids.length === 0) {
         return res.status(400).json({ message: "No assessments selected for deletion" });
@@ -238,7 +238,7 @@ app.post("/api/assessments/delete", async (req, res) => {
 
 // Get a specific assessment 
 //  ID
-app.get("/api/assessments/:id", authenticateToken, async (req, res) => {
+app.get("/assessments/:id", authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT a.*, u.full_name AS volunteer_name 
@@ -260,7 +260,7 @@ app.get("/api/assessments/:id", authenticateToken, async (req, res) => {
 
 
 
-app.put("/api/assessments/:id/status", authenticateToken, async (req, res) => {
+app.put("/assessments/:id/status", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
@@ -285,7 +285,7 @@ app.put("/api/assessments/:id/status", authenticateToken, async (req, res) => {
     }
 });
 
-app.put("/api/assessments/:id/level", authenticateToken, async (req, res) => {
+app.put("/assessments/:id/level", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { level } = req.body;
 
@@ -310,7 +310,7 @@ app.put("/api/assessments/:id/level", authenticateToken, async (req, res) => {
     }
 });
 
-app.get("/api/statistics", authenticateToken, async (req, res) => {
+app.get("/statistics", authenticateToken, async (req, res) => {
     try {
         const { region, city, barangay, school, age, gender } = req.query;
 
@@ -369,7 +369,7 @@ app.get("/api/statistics", authenticateToken, async (req, res) => {
     }
 });
 
-app.get("/api/levels", authenticateToken, async (req, res) => {
+app.get("/levels", authenticateToken, async (req, res) => {
     try {
         let query = `
             SELECT level, COUNT(*) as count FROM assessments
@@ -409,7 +409,7 @@ app.get("/api/levels", authenticateToken, async (req, res) => {
     }
 });
 
-app.post("/api/auth/register", async (req, res) => {
+app.post("/auth/register", async (req, res) => {
     const { email, password, fullName = "", bio = "", avatarUrl = "", phoneNumber = "", skills = "", location = "" } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -432,7 +432,7 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 // Fetch all users (admin only)
-app.get("/api/users", authenticateToken, async (req, res) => {
+app.get("/users", authenticateToken, async (req, res) => {
     if (req.user.role !== "mngt") {
         return res.status(403).json({ message: "Forbidden: Management access required" });
     }
@@ -446,7 +446,7 @@ app.get("/api/users", authenticateToken, async (req, res) => {
 });
 
 // Change password route
-app.post("/api/user/profile/change-password", authenticateToken, async (req, res) => {
+app.post("/user/profile/change-password", authenticateToken, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {

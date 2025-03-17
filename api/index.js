@@ -476,7 +476,7 @@ app.post("/api/user/profile/change-password", authenticateToken, async (req, res
 
 app.get("/", (
     request, response
-)=>(response,send("CloudyProot")))
+)=>(response,res.send("CloudyProot")))
 
 app.listen(5000, () => console.log("Server running on port 5000"));
 

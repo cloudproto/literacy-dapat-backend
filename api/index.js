@@ -16,27 +16,8 @@ const pool = new Pool({
 });
 
 const app = express();
-app.use(cors({
-    origin: "https://literacy-dapat.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
-}));
+app.use(cors({ origin: 'https://literacy-dapat.vercel.app' }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://literacy-dapat.vercel.app");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.header("Access-Control-Allow-Credentials", "true");
-    
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(204);
-    }
-    next();
-});
-
-
 
 // Serve uploaded images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

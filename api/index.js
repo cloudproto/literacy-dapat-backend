@@ -57,7 +57,7 @@ const upload = multer({ storage });
 app.post("/upload-avatar", authenticateToken, upload.single("avatar"), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    const fileUrl = ${req.protocol}://${req.get("host")}/uploads/${req.file.filename};
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
     try {
         await pool.query(
